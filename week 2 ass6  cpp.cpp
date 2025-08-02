@@ -1,114 +1,60 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-// Node definition
-struct Node {
-    int coeff;
-    int pow;
-    Node* next;
-
-    Node(int c, int p) {
-        coeff = c;
-        pow = p;
-        next = NULL;
-    }
-};
-
-// Class to add two polynomial linked lists
 class Solution {
 public:
-    Node* addPolynomial(Node* head1, Node* head2) {
-        Node* dummy = new Node(0, 0); // Temporary dummy node
-        Node* tail = dummy;
+    vector<int> multiply(vector<int> &A, vector<int> &B) {
+        int n = A.size();
+        int m = B.size();
+        vector<int> result(n + m - 1, 0); // Degree of result = (n-1) + (m-1)
 
-        Node* p1 = head1;
-        Node* p2 = head2;
-
-        while (p1 && p2) {
-            if (p1->pow == p2->pow) {
-                int sum = p1->coeff + p2->coeff;
-                if (sum != 0) {
-                    tail->next = new Node(sum, p1->pow);
-                    tail = tail->next;
-                }
-                p1 = p1->next;
-                p2 = p2->next;
-            } else if (p1->pow > p2->pow) {
-                tail->next = new Node(p1->coeff, p1->pow);
-                tail = tail->next;
-                p1 = p1->next;
-            } else {
-                tail->next = new Node(p2->coeff, p2->pow);
-                tail = tail->next;
-                p2 = p2->next;
+        // Multiply each term of A with each term of B
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                result[i + j] += A[i] * B[j];
             }
         }
 
-        // Attach remaining terms
-        while (p1) {
-            tail->next = new Node(p1->coeff, p1->pow);
-            tail = tail->next;
-            p1 = p1->next;
-        }
-
-        while (p2) {
-            tail->next = new Node(p2->coeff, p2->pow);
-            tail = tail->next;
-            p2 = p2->next;
-        }
-
-        return dummy->next;
+        return result;
     }
 };
 
-// Utility function to create a linked list from input
-Node* createPolynomial(int terms) {
-    Node* head = NULL;
-    Node* tail = NULL;
-
-    cout << "Enter " << terms << " terms (coeff power):" << endl;
-    for (int i = 0; i < terms; i++) {
-        int c, p;
-        cin >> c >> p;
-        Node* newNode = new Node(c, p);
-        if (!head) {
-            head = tail = newNode;
-        } else {
-            tail->next = newNode;
-            tail = tail->next;
-        }
-    }
-
-    return head;
-}
-
-// Function to print the polynomial
-void printPolynomial(Node* head) {
-    Node* temp = head;
-    while (temp) {
-        cout << temp->coeff << "x^" << temp->pow;
-        if (temp->next) cout << " + ";
-        temp = temp->next;
+// Utility to print the polynomial
+void printPolynomial(const vector<int>& poly) {
+    for (int i = 0; i < poly.size(); i++) {
+        cout << poly[i];
+        if (i != 0) cout << "x^" << i;
+        if (i != poly.size() - 1) cout << " + ";
     }
     cout << endl;
 }
 
 // Driver code
 int main() {
+    Solution sol;
+    vector<int> A, B;
+
     int n1, n2;
-
-    cout << "Enter number of terms in first polynomial: ";
+    cout << "Enter size of first polynomial: ";
     cin >> n1;
-    Node* poly1 = createPolynomial(n1);
+    A.resize(n1);
+    cout << "Enter " << n1 << " coefficients for first polynomial:\n";
+    for (int i = 0; i < n1; ++i) {
+        cin >> A[i];
+    }
 
-    cout << "Enter number of terms in second polynomial: ";
+    cout << "Enter size of second polynomial: ";
     cin >> n2;
-    Node* poly2 = createPolynomial(n2);
+    B.resize(n2);
+    cout << "Enter " << n2 << " coefficients for second polynomial:\n";
+    for (int i = 0; i < n2; ++i) {
+        cin >> B[i];
+    }
 
-    Solution obj;
-    Node* result = obj.addPolynomial(poly1, poly2);
+    vector<int> result = sol.multiply(A, B);
 
-    cout << "Resultant Polynomial after addition: ";
+    cout << "Resultant Polynomial: ";
     printPolynomial(result);
 
     return 0;
